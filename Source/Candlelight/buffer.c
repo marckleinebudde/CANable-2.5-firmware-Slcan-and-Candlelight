@@ -268,7 +268,14 @@ void buf_store_rx_packet(FDCAN_RxHeaderTypeDef *rx_header, uint8_t *frame_data)
             frame_data[0] = can_dlc;
             byte_count = 1;            
         }
-        else byte_count = utils_dlc_to_byte_count(can_dlc);
+        else if (rx_header->FDFormat == FDCAN_FD_CAN)
+        {
+            byte_count = utils_dlc_to_byte_count(can_dlc);
+        }
+        else
+        {
+            byte_count = MIN(8, can_dlc);
+        }
 
         kRxFrameElmue* frame = (kRxFrameElmue*)&pool_frame->frame;
         frame->header.size     = sizeof(kRxFrameElmue) + byte_count;
